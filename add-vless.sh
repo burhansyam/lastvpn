@@ -45,7 +45,7 @@ clear
 	done
 
 read -p "Bug Address (Example: www.google.com) : " address
-read -p "Bug SNI/Host (Example : m.facebook.com) : " hst
+read -p "Bug SNI/Host (Example : m.facebook.com) : " dst
 read -p "Expired (days) : " masaaktif
 bug_addr=${address}.
 bug_addr2=${address}
@@ -67,17 +67,17 @@ exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
 hariini=`date -d "0 days" +"%Y-%m-%d"`
 
 sed -i '/#tls$/a\### '"$user $exp"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/vless.json
+},{"id": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/vless.json
 sed -i '/#none$/a\### '"$user $exp"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/vnone.json
+},{"id": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/vnone.json
 
 # Restart Service
 systemctl restart xray@vless.service
 systemctl restart xray@vnone.service
 service cron restart
 
-vlesslink1="vless://${uuid}@${sts}${domain}:443?type=ws&encryption=none&security=tls&host=${domain}&path=/vless-tls&allowInsecure=1&sni=${sni}#XRAY_VLESS_TLS_${user}"
-vlesslink2="vless://${uuid}@${sts}${domain}:80?type=ws&encryption=none&security=none&host=${domain}&path=/vless-ntls#XRAY_VLESS_NTLS_${user}"
+vlesslink1="vless://${user}@${sts}${domain}:443?type=ws&encryption=none&security=tls&host=${domain}&path=/vless-tls&allowInsecure=1&sni=${sni}#XRAY_VLESS_TLS_${user}"
+vlesslink2="vless://${user}@${sts}${domain}:80?type=ws&encryption=none&security=none&host=${domain}&path=/vless-ntls#XRAY_VLESS_NTLS_${user}"
 
 cat > /home/vps/public_html/$user-$exp-VLESSTLS.yaml <<EOF
 port: 7890
@@ -399,7 +399,7 @@ echo -e "Domain            : ${domain}"
 echo -e "IP/Host           : ${MYIP}"
 echo -e "Port TLS          : 443"
 echo -e "Port None TLS     : 80, 8080, 8880"
-echo -e "ID                : ${uuid}"
+echo -e "ID                : ${user}"
 echo -e "Security          : TLS"
 echo -e "Encryption        : None"
 echo -e "Network           : WS"
